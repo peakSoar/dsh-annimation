@@ -10,7 +10,7 @@
  * The controller API (documented by @deepseek-ai/dsh-client-ui-sidebar-right):
  *   openTab("browser", { params: { url } })  — open or reveal a tab
  *   active()                                  — the focused tab record
- *   float(tabId, rect?)                       — move a docked tab into a float
+ *   float(tabId)                              — move a docked tab into a float
  *   close(tabId)                              — close one tab
  */
 
@@ -58,17 +58,37 @@ export function hasSidebarRight(): boolean {
   return service !== undefined;
 }
 
+/**
+ * Ask the controller to float a docked tab.
+ *
+ * Opening the column and mounting its surface are separate steps, so the first
+ * `float()` can arrive before there is a surface to float on; retrying a few
+ * times covers that window without touching a tab that is already floating
+ * (the controller ignores those).
+ */
+function floatWithRetries(tabId: string, attempts = 6): void {
+  const target = service;
+  if (target === undefined) return;
+  // A close (or a newer open) ends this retry chain.
+  if (openedTab !== tabId) return;
+  try {
+    target.float(tabId);
+  } catch {
+    /* no mounted surface yet, or the tab is gone */
+  }
+  if (attempts <= 0) return;
+  window.setTimeout(() => {
+    floatWithRetries(tabId, attempts - 1);
+  }, 300);
+}
+
 /** Adopt the focused Browser tab, float it, and remember it. */
 function adoptFocusedTab(target: SidebarRightService | undefined): void {
   if (target === undefined) return;
   const tab = target.active();
   if (tab === undefined || (tab.kind !== undefined && tab.kind !== "browser")) return;
   openedTab = tab.id;
-  try {
-    target.float(tab.id);
-  } catch {
-    /* already floating, or no mounted surface: the tab stays in the column */
-  }
+  floatWithRetries(tab.id);
 }
 
 /**
