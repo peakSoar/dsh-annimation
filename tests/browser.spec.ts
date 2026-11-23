@@ -21,6 +21,9 @@ function service(): SidebarRightService & { calls: string[] } {
     float(tabId) {
       calls.push(`float:${tabId}`);
     },
+    dock(paneId) {
+      calls.push(`dock:${paneId}`);
+    },
     close(tabId) {
       calls.push(`close:${tabId}`);
     },
