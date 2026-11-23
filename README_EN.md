@@ -1,42 +1,40 @@
-# dsh-hongguo-window
+# dsh-douyin-window
 
 > Repository: <https://github.com/peakSoar/dsh-annimation> · issues welcome
 
 English | [中文](README.md)
 
-**Hongguo Shorts follows the task** — a DeepSeek Harness (DSH) plugin: **when the agent starts working it opens a floating 红果短剧 (Hongguo Shorts) window; when the task ends the window stows itself and a “Work finished” toast floats in**. The window can be dragged, resized from eight edges, minimized into a pill, and reopened from the toast.
+**Douyin follows the task** — a DeepSeek Harness (DSH) plugin: **when the agent starts working it opens Douyin in a floating panel; when the task ends it closes the window and floats a “Work finished” notice**.
 
-> For personal viewing only. The window is just a public page embedded in an iframe: no login, no scraping, no proxy, no injected scripts, no page rewriting. Follow the site's terms of service.
+> Douyin refuses iframe embedding (it answers with a slider-captcha intermediate page), so this plugin does not use an iframe. It asks DSH's built-in browser for a native Browser tab and floats that tab into a draggable panel. Login, cookies and playback all run in a real browser session, kept across restarts.
 
 ## Features
 
 | | Behaviour |
 | --- | --- |
-| **Auto open** | Any running session makes the window appear and expand — including a page load that happens mid-turn |
-| **Auto stow** | Once every session is idle (1.5 s grace, so multi-round turns never flicker) the window hides |
-| **Finish toast** | A “Work finished” card slides in top-right for 6 s; its action button reopens the window |
-| **Status chip** | A pulsing dot plus “Working / Idle” in the title bar |
-| **Window controls** | Drag, eight-way resize, minimize into a bottom-right pill, close, reload, open in browser |
-| **Geometry memory** | Position and size persist; restored rectangles are clamped back into the viewport |
-| **Configurable** | Four behaviour switches and a custom URL; a profile can pin the entry page |
+| **Auto open** | Any running session opens/reveals the Douyin tab and floats it — including a page load that happens mid-turn |
+| **Auto close** | Once every session is idle (1.5 s grace) the window closes |
+| **Finish toast** | A “Work finished” card slides in top-right for 6 s; its action reopens the window |
+| **Login kept** | DSH's built-in browser (Electron webview) keeps the Douyin session across restarts |
+| **Floating** | A native dockkit floating panel: drag, resize, or dock it back to the right column |
+| **Launcher** | Bottom-right pill: “Douyin” opens, the gear opens settings |
+| **Configurable** | URL plus four switches (auto-open / auto-close / toast / launcher) |
 | **Bilingual** | Follows the DSH host language (Chinese / English), live |
 
-## Screenshot
+## Why not an iframe
 
-The window embeds the Hongguo Shorts page itself (below: the feed inside a 410×700 iframe; the site sends no `X-Frame-Options` / CSP refusal):
-
-![Hongguo Shorts feed](docs/screenshot-embed.png)
+Measured in a normal (non-headless) Chrome: loading `https://www.douyin.com/` in a cross-origin iframe produces a **“验证码中间页”** (captcha intermediate page); the captcha iframe URL carries `from=iframe`, and the recommendation feed never renders. So an iframe is not viable; the native Browser tab is the only in-DSH way to log in and scroll Douyin normally.
 
 ## Install
 
-Requires DSH ≥ 0.2.1-rc.2 with a web or desktop profile.
+Requires DSH ≥ 0.2.1-rc.2 on Desktop (the built-in Browser is enabled there by default).
 
 ```bash
 dsh plugin --profile desktop add github:peakSoar/dsh-annimation
-# restart dsh (or the desktop app), then hard-refresh the page (Ctrl+Shift+R / ⌘⇧R)
+# restart DSH, then hard-refresh the page
 ```
 
-Use whichever profile you actually run (`desktop` or `web`). The repository ships the built `lib/` output, so installing from source needs no build step; run `pnpm run build` after editing the source.
+The repository ships the built `lib/` output, so installing from source needs no build step; run `pnpm run build` after editing the source.
 
 <details>
 <summary>Local development (link install)</summary>
@@ -44,7 +42,7 @@ Use whichever profile you actually run (`desktop` or `web`). The repository ship
 ```bash
 cd ~/.dsh/profiles/desktop
 pnpm add link:~/projects/dsh-annimation
-# append "dsh-hongguo-window" to dsh.profile.bundles in package.json
+# append "dsh-douyin-window" to dsh.profile.bundles in package.json
 cd ~/projects/dsh-annimation && pnpm install && pnpm run build
 ```
 
@@ -52,42 +50,43 @@ cd ~/projects/dsh-annimation && pnpm install && pnpm run build
 
 ## Usage
 
-Nothing to wire up: send DSH a message and the window appears; when the turn ends it stows and the toast appears.
-
-- Title bar: reload / settings / open in browser / minimize / close.
-- **Close** applies to the current cycle only; the next turn opens the window again.
-- Settings can disable auto-open, auto-stow, the toast, or keep a small launcher while idle.
-- “Preview finish effect” in settings plays the stow + toast animation immediately.
+- Send DSH a message: the Douyin panel opens automatically (the first time it asks you to log in; afterwards the feed loads directly).
+- Turn ends: the window closes and the toast appears.
+- Manual open: the bottom-right “Douyin” pill; its gear opens settings (URL, switches, Open now).
+- Closing applies to the current cycle only; the next turn opens it again.
 
 ## Configuration (optional)
 
-Pin the embedded page in the profile's `cordis.patch.yml`:
+Pin the opened page in the profile's `cordis.patch.yml`:
 
 ```yaml
-- id: hongguo-window
+- id: douyin-window
   config:
-    url: https://hongguoduanju.com/?tab=feed
+    url: https://www.douyin.com/
 ```
 
-Without it the built-in default is used. A URL edited in the UI wins over the profile value (it lives in localStorage). Only absolute `http(s)` URLs without credentials are accepted.
+Without it the built-in default is used. A URL edited in the UI wins (it lives in localStorage). Only absolute `http(s)` URLs are accepted.
 
 ## How it works
 
-- **Host half** (`src/index.ts`): one fenced `GET /hongguo-wall/config` returning `{ url }`; no proxy and no write path.
-- **Client half** (`src/client/`): `apply()` dynamically injects `locale` (UI language) and `uiSession` (per-session `running` / `pendingInteraction` / `completionUnread` status). Any session running a turn means “working”.
-- **State machine** (`app.tsx` + `monitor.ts`): `idle → working` opens the window; `working → idle` waits 1.5 s, then stows and toasts (cancelled if work resumes).
-- **Window** (`window.tsx`): a plain iframe of the public site. A cross-origin frame cannot report that it was refused, so an 18-second watchdog shows a fallback card (retry / open in browser).
+- **Host half** (`src/index.ts`): one fenced `GET /douyin-window/config` returning `{ url }`.
+- **Client half** (`src/client/`): dynamically injects three services:
+  - `locale` — UI language;
+  - `uiSession` — per-session `running` status, the working/idle signal;
+  - `sidebarRight` — the shell's right-sidebar controller: `openTab("browser", { params: { url } })`, `active()` for the tab id, `float(tabId)` to float it, `close(tabId)` at the end.
+- **State machine** (`app.tsx` + `monitor.ts`): `idle → working` opens and floats; `working → idle` waits 1.5 s, then closes and toasts (cancelled if work resumes).
+- **Fallback**: without the Browser-tab API, a manual pill click opens the system browser; auto-open waits quietly.
 
 ## Known limitations
 
-- **Embedding is the site's call**: if 红果 ever adds `X-Frame-Options` or CSP `frame-ancestors`, browsers refuse the frame; the window then shows the fallback card with a one-click browser handoff.
-- **Sign-in / recommendations** depend on the site's own cookies; environments that block third-party cookies may behave differently from a direct visit.
-- **No scraping**: the plugin never parses Hongguo APIs, proxies video, or adapts to site redesigns.
-- **Modern desktop browsers**: relies on `backdrop-filter`, pointer capture, etc. (DSH desktop/Electron and current Chrome/Edge are fine).
+- **Desktop Browser required**: Web profiles do not enable Browser tabs by default; without it only the system-browser fallback exists.
+- **Floating depends on a mounted surface**: if the column cannot float the tab, it stays docked in the right column (login/playback still work).
+- **Login is Douyin's**: expect a QR/phone-code prompt the first time; DSH's browser session keeps the cookies.
+- **Not an iframe**: the plugin never scrapes, proxies or rewrites Douyin content.
 
 ## Origin and credits
 
-This project was adapted from the MIT-licensed [dsh-shorts-wall](https://github.com/imkingjh999/dsh-shorts-wall) by imkingjh999: it keeps that plugin's host-route + browser-floating-window skeleton and build setup, while the content and lifecycle logic were rewritten for Hongguo Shorts. The package is named `dsh-hongguo-window` so it does not collide with the upstream `dsh-shorts-wall` release; the two can be installed side by side.
+The plugin skeleton (host route + browser-side Cordis injection + tsdown dual-channel bundling) was adapted from the MIT-licensed [dsh-shorts-wall](https://github.com/imkingjh999/dsh-shorts-wall) by imkingjh999; the content and lifecycle logic were rewritten for the native-browser Douyin window.
 
 ## Market listing
 
@@ -99,7 +98,7 @@ dsh-market discovers plugins through the [awesome-dsh-plugin](https://github.com
 pnpm install
 pnpm run build      # tsdown: host ESM + dual-channel client CJS factories
 pnpm run typecheck
-pnpm test           # vitest: state machine / settings / geometry / config route / i18n / render
+pnpm test           # vitest: state machine / settings / config route / i18n / native-tab bridge
 node tests/smoke-client.mjs   # headless smoke: bundle registration + apply mount/unmount
 ```
 

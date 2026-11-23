@@ -1,7 +1,7 @@
 {
-  "name": "dsh-hongguo-window",
+  "name": "dsh-douyin-window",
   "version": "1.0.0",
-  "description": "红果短剧随任务浮窗 — DSH 插件：Harness 开始工作时自动打开红果短剧浮窗，任务结束时自动收起并飘出「工作结束了」提示",
+  "description": "抖音随任务浮窗 — DSH 插件：Harness 开始工作时自动打开并浮动抖音（DSH 内置浏览器，可登录），任务结束时自动收起并提示",
   "type": "module",
   "license": "MIT",
   "repository": {
@@ -9,17 +9,17 @@
     "url": "git+https://github.com/peakSoar/dsh-annimation.git"
   },
   "keywords": [
-    "dsh-hongguo-window",
+    "dsh-douyin-window",
     "dsh",
     "dsh-plugin",
     "dsh-plugin-web",
     "dsh-market",
     "deepseek-harness",
     "deepseek-harness-plugin",
-    "hongguo",
-    "红果短剧",
-    "short-drama",
-    "floating-window"
+    "douyin",
+    "抖音",
+    "floating-window",
+    "browser-tab"
   ],
   "engines": {
     "node": ">=20",
@@ -35,12 +35,10 @@
   "files": [
     "lib",
     "src",
-    "docs",
     "assets",
     "scripts",
     "cordis.patch.yml",
     "dsh.plugin.json",
-    "screenshots.json",
     "README.md",
     "README_EN.md",
     "LICENSE"

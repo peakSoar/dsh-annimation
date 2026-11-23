@@ -1,5 +1,5 @@
 /**
- * Settings dialog: the embedded URL plus the four behaviour switches.
+ * Settings dialog: the opened URL plus the four behaviour switches.
  * Edits apply immediately (each switch writes through to localStorage); the
  * URL field commits on blur or Enter so half-typed addresses never load.
  */
@@ -12,8 +12,8 @@ export interface SettingsPanelProps {
   settings: Settings;
   onChange(patch: Partial<Settings>): void;
   onClose(): void;
-  onResetRect(): void;
-  onPreviewFinish(): void;
+  /** Open Douyin right now with the current URL. */
+  onOpenNow(): void;
 }
 
 /** One labelled switch row. */
@@ -24,16 +24,16 @@ function Row(props: {
   onToggle(): void;
 }): ReactNode {
   return (
-    <div className="hgw-row">
-      <div className="hgw-row-text">
-        <span className="hgw-row-title">{props.title}</span>
-        <span className="hgw-row-desc">{props.description}</span>
+    <div className="dyw-row">
+      <div className="dyw-row-text">
+        <span className="dyw-row-title">{props.title}</span>
+        <span className="dyw-row-desc">{props.description}</span>
       </div>
       <button
         type="button"
         role="switch"
         aria-checked={props.on}
-        className={`hgw-switch${props.on ? " on" : ""}`}
+        className={`dyw-switch${props.on ? " on" : ""}`}
         onClick={props.onToggle}
       />
     </div>
@@ -80,28 +80,30 @@ export function SettingsPanel(props: SettingsPanelProps): ReactNode {
 
   return (
     <div
-      className="hgw-mask"
+      className="dyw-mask"
       role="presentation"
       onMouseDown={(event) => {
         if (event.target === event.currentTarget) props.onClose();
       }}
     >
-      <div className="hgw-modal" role="dialog" aria-modal="true" aria-label={t("settings.title")}>
-        <div className="hgw-modal-head">
-          <span className="hgw-logo" aria-hidden="true">红</span>
-          <span className="hgw-modal-title">{t("settings.title")}</span>
-          <button type="button" className="hgw-icon" onClick={props.onClose} title={t("settings.close")} aria-label={t("settings.close")}>
+      <div className="dyw-modal" role="dialog" aria-modal="true" aria-label={t("settings.title")}>
+        <div className="dyw-modal-head">
+          <span className="dyw-logo" aria-hidden="true">抖</span>
+          <span className="dyw-modal-title">{t("settings.title")}</span>
+          <button type="button" className="dyw-btn" onClick={props.onClose} title={t("settings.close")}>
             ×
           </button>
         </div>
 
-        <div className="hgw-field">
-          <label className="hgw-label" htmlFor="hgw-url">
+        <div className="dyw-note">{t("settings.nativeNote")}</div>
+
+        <div className="dyw-field">
+          <label className="dyw-label" htmlFor="dyw-url">
             {t("settings.url")}
           </label>
           <input
-            id="hgw-url"
-            className="hgw-input"
+            id="dyw-url"
+            className="dyw-input"
             value={draft}
             placeholder={t("settings.urlPlaceholder")}
             spellCheck={false}
@@ -119,9 +121,9 @@ export function SettingsPanel(props: SettingsPanelProps): ReactNode {
             }}
           />
           {error ? (
-            <span className="hgw-hint err">{t("settings.urlInvalid")}</span>
+            <span className="dyw-hint err">{t("settings.urlInvalid")}</span>
           ) : (
-            <span className="hgw-hint">{t("settings.urlHint")}</span>
+            <span className="dyw-hint">{t("settings.urlHint")}</span>
           )}
         </div>
 
@@ -150,23 +152,20 @@ export function SettingsPanel(props: SettingsPanelProps): ReactNode {
           }}
         />
         <Row
-          title={t("settings.idleLauncher")}
-          description={t("settings.idleLauncherHint")}
-          on={props.settings.idleLauncher}
+          title={t("settings.showPill")}
+          description={t("settings.showPillHint")}
+          on={props.settings.showPill}
           onToggle={() => {
-            props.onChange({ idleLauncher: !props.settings.idleLauncher });
+            props.onChange({ showPill: !props.settings.showPill });
           }}
         />
 
-        <div className="hgw-modal-foot">
-          <button type="button" className="hgw-btn" onClick={props.onResetRect}>
-            {t("settings.resetRect")}
-          </button>
-          <button type="button" className="hgw-btn" onClick={props.onPreviewFinish}>
-            {t("settings.preview")}
+        <div className="dyw-modal-foot">
+          <button type="button" className="dyw-btn primary" onClick={props.onOpenNow}>
+            {t("settings.openNow")}
           </button>
           <span style={{ flex: 1 }} />
-          <button type="button" className="hgw-btn primary" onClick={props.onClose}>
+          <button type="button" className="dyw-btn" onClick={props.onClose}>
             {t("settings.close")}
           </button>
         </div>

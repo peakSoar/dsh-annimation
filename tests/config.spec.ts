@@ -32,12 +32,12 @@ function request(method: string, url: string): IncomingMessage {
 describe("host config route", () => {
   const handler = createConfigHandler(DEFAULT_URL, () => undefined);
 
-  it("serves the pinned URL as JSON", () => {
+  it("serves the Douyin URL as JSON", () => {
     const { res, state } = response();
     handler(request("GET", CONFIG_PATH), res);
     expect(state.status).toBe(200);
     expect(String(state.headers["content-type"])).toContain("application/json");
-    expect(JSON.parse(state.body)).toEqual({ url: DEFAULT_URL });
+    expect(JSON.parse(state.body)).toEqual({ url: "https://www.douyin.com/" });
   });
 
   it("answers HEAD without a body", () => {
@@ -55,7 +55,7 @@ describe("host config route", () => {
 
   it("404s other paths under the prefix", () => {
     const { res, state } = response();
-    handler(request("GET", "/hongguo-wall/other"), res);
+    handler(request("GET", "/douyin-window/other"), res);
     expect(state.status).toBe(404);
   });
 
@@ -70,9 +70,7 @@ describe("host config route", () => {
 
 describe("normalizeUrl", () => {
   it("normalizes accepted URLs", () => {
-    expect(normalizeUrl("https://hongguoduanju.com/?tab=feed")).toBe(
-      "https://hongguoduanju.com/?tab=feed",
-    );
+    expect(normalizeUrl("https://www.douyin.com/")).toBe("https://www.douyin.com/");
   });
 
   it("rejects everything else", () => {

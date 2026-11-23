@@ -25,9 +25,7 @@ function memory(initial: Record<string, string> = {}): SettingsStorage & { dump(
 
 describe("normalizeUrl", () => {
   it("keeps absolute http(s) URLs", () => {
-    expect(normalizeUrl("https://hongguoduanju.com/?tab=feed")).toBe(
-      "https://hongguoduanju.com/?tab=feed",
-    );
+    expect(normalizeUrl("https://www.douyin.com/")).toBe("https://www.douyin.com/");
     expect(normalizeUrl(" http://example.com/a ")).toBe("http://example.com/a");
   });
 
@@ -40,13 +38,16 @@ describe("normalizeUrl", () => {
     expect(normalizeUrl(42)).toBeUndefined();
     expect(normalizeUrl("not a url")).toBeUndefined();
   });
-
-  it("rejects absurdly long inputs", () => {
-    expect(normalizeUrl(`https://example.com/${"a".repeat(3000)}`)).toBeUndefined();
-  });
 });
 
 describe("parseSettings", () => {
+  it("defaults to the Douyin feed", () => {
+    expect(DEFAULT_SETTINGS.url).toBe("https://www.douyin.com/");
+    expect(DEFAULT_SETTINGS.showPill).toBe(true);
+    expect(DEFAULT_SETTINGS.autoOpen).toBe(true);
+    expect(DEFAULT_SETTINGS.autoClose).toBe(true);
+  });
+
   it("falls back to defaults for empty or broken records", () => {
     expect(parseSettings(null)).toEqual(DEFAULT_SETTINGS);
     expect(parseSettings("{")).toEqual(DEFAULT_SETTINGS);
@@ -56,12 +57,12 @@ describe("parseSettings", () => {
 
   it("keeps valid overrides and ignores wrong types", () => {
     const parsed = parseSettings(
-      JSON.stringify({ url: "https://example.com/x", autoOpen: false, autoClose: "no", notify: false }),
+      JSON.stringify({ url: "https://example.com/x", autoOpen: false, autoClose: "no", showPill: false }),
     );
     expect(parsed.url).toBe("https://example.com/x");
     expect(parsed.autoOpen).toBe(false);
     expect(parsed.autoClose).toBe(DEFAULT_SETTINGS.autoClose);
-    expect(parsed.notify).toBe(false);
+    expect(parsed.showPill).toBe(false);
   });
 });
 
@@ -69,7 +70,7 @@ describe("settings persistence", () => {
   it("round-trips through storage", () => {
     const storage = memory();
     expect(hasStoredSettings(storage)).toBe(false);
-    const settings = { ...DEFAULT_SETTINGS, autoClose: false, idleLauncher: true };
+    const settings = { ...DEFAULT_SETTINGS, autoClose: false, showPill: false };
     saveSettings(settings, storage);
     expect(hasStoredSettings(storage)).toBe(true);
     expect(loadSettings(storage)).toEqual(settings);

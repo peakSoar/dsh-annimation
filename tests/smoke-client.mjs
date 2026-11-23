@@ -1,11 +1,9 @@
 /**
  * Headless smoke test of the built browser bundle.
  *
- * Executes lib/client.js in the same CJS closure shape the web shell's module
- * loader uses, then drives apply() through stub service injections. It proves
- * three things the unit tests cannot: the bundle registers under the expected
- * id, it requires only platform modules, and it mounts/unmounts its host node
- * without a real DOM.
+ * Executes lib/client.js in the CJS closure shape the web shell's module
+ * loader uses, then drives apply() through stub service injections: locale,
+ * the session status store and the native Browser-tab controller.
  */
 import { createRequire } from "node:module";
 
@@ -61,7 +59,7 @@ await import("../lib/client.js");
 const id = loaded[0];
 const exports = globalThis.__loadedExports[id];
 process.stdout.write(`registered bundle id: ${id}\n`);
-if (id !== "dsh-hongguo-window") throw new Error(`bundle id mismatch: ${id}`);
+if (id !== "dsh-douyin-window") throw new Error(`bundle id mismatch: ${id}`);
 if (typeof exports.apply !== "function") throw new Error("bundle does not export apply()");
 if (exports.inject !== undefined) {
   throw new Error("static inject must not be declared (a hard dependency would fail the whole boot)");
@@ -77,14 +75,20 @@ function fakeSessions() {
       listeners.add(listener);
       return () => listeners.delete(listener);
     },
-    setRunning(running) {
-      snapshot.set("main", { running });
-      for (const listener of [...listeners]) listener();
-    },
   };
 }
 
-/** Cordis-context double that resolves the two optional dependencies. */
+/** Browser-tab controller double. */
+function fakeSidebar() {
+  return {
+    openTab() {},
+    active: () => undefined,
+    float() {},
+    close() {},
+  };
+}
+
+/** Cordis-context double that resolves the three optional dependencies. */
 function makeCtx({ withServices }) {
   const effects = [];
   const ctx = {
@@ -95,12 +99,17 @@ function makeCtx({ withServices }) {
     },
     inject(deps, callback) {
       if (!withServices) return { dispose() {} };
-      if (deps.length === 1 && deps[0] === "locale") {
+      const key = deps.length === 1 ? deps[0] : "";
+      if (key === "locale") {
         callback({ effect: ctx.effect, locale: undefined });
         return { dispose() {} };
       }
-      if (deps.length === 1 && deps[0] === "uiSession") {
+      if (key === "uiSession") {
         callback({ effect: ctx.effect, uiSession: { sessionStatus: fakeSessions() } });
+        return { dispose() {} };
+      }
+      if (key === "sidebarRight") {
+        callback({ effect: ctx.effect, sidebarRight: fakeSidebar() });
         return { dispose() {} };
       }
       throw new Error(`unexpected inject deps ${JSON.stringify(deps)}`);
@@ -109,7 +118,7 @@ function makeCtx({ withServices }) {
   return { ctx, effects };
 }
 
-// 1. No services yet: the window still mounts and waits for them.
+// 1. No services yet: the pill/toast host still mounts and waits.
 {
   const { ctx, effects } = makeCtx({ withServices: false });
   exports.apply(ctx);
@@ -119,13 +128,13 @@ function makeCtx({ withServices }) {
   process.stdout.write("apply() mounts without shell services ✓\n");
 }
 
-// 2. Services present: same mount path, injections resolve.
+// 2. All services present: same mount path, injections resolve.
 {
   const { ctx, effects } = makeCtx({ withServices: true });
   exports.apply(ctx);
   if (appended !== 2) throw new Error(`expected a second mounted host, got ${appended}`);
   for (const dispose of effects) dispose();
-  process.stdout.write("apply() mounts with locale + uiSession ✓\n");
+  process.stdout.write("apply() mounts with locale + uiSession + sidebarRight ✓\n");
 }
 
 process.stdout.write("SMOKE TEST PASSED\n");

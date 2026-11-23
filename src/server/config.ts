@@ -1,12 +1,12 @@
 /**
- * Host half of the 红果短剧 window: one fenced read-only config route.
+ * Host half of the 抖音 window: one fenced read-only config route.
  *
  * The browser half owns every user-facing default (localStorage), but a
- * profile may pin the embedded page in `cordis.patch.yml`:
+ * profile may pin the opened page in `cordis.patch.yml`:
  *
- *   - id: hongguo-window
+ *   - id: douyin-window
  *     config:
- *       url: https://hongguoduanju.com/?tab=feed
+ *       url: https://www.douyin.com/
  *
  * The route is registered on the Host web server, so it inherits the
  * composition's Host/Origin + browser-cookie fence. There is no proxy and no
@@ -14,11 +14,11 @@
  */
 import type { IncomingMessage, ServerResponse } from "node:http";
 
-/** Page embedded when neither the profile nor the user chose one. */
-export const DEFAULT_URL = "https://hongguoduanju.com/?tab=feed";
+/** Page opened when neither the profile nor the user chose one. */
+export const DEFAULT_URL = "https://www.douyin.com/";
 
 /** Exact route the client fetches. */
-export const CONFIG_PATH = "/hongguo-wall/config";
+export const CONFIG_PATH = "/douyin-window/config";
 
 /** Accept only absolute http(s) URLs without embedded credentials. */
 export function normalizeUrl(raw: unknown): string | undefined {

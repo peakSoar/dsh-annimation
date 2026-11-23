@@ -34,17 +34,17 @@ describe("locale attachment", () => {
   it("registers both dictionaries and translates per language", () => {
     const service = locale();
     const off = attachLocale(service);
-    expect(service.dictionaries.get("zh:app.title")).toBe("红果短剧");
-    expect(service.dictionaries.get("en:app.title")).toBe("Hongguo Shorts");
+    expect(service.dictionaries.get("zh:app.title")).toBe("抖音");
+    expect(service.dictionaries.get("en:app.title")).toBe("Douyin");
 
-    expect(tr("app.title")).toBe("红果短剧");
+    expect(tr("app.title")).toBe("抖音");
     service.switchTo("en");
-    expect(tr("app.title")).toBe("Hongguo Shorts");
+    expect(tr("app.title")).toBe("Douyin");
     expect(tr("toast.title")).toBe("Work finished");
 
     off();
     expect(service.dictionaries.size).toBe(0);
-    expect(tr("app.title")).toBe("红果短剧");
+    expect(tr("app.title")).toBe("抖音");
   });
 
   it("falls back to the key for unknown entries", () => {

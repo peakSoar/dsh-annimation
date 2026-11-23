@@ -1,13 +1,13 @@
-# dsh-hongguo-window bundle patch: mounts the plugin's host half (the fenced
-# /hongguo-wall/config route) into the profile layer stack.
+# dsh-douyin-window bundle patch: mounts the plugin's host half (the fenced
+# /douyin-window/config route) into the profile layer stack.
 #
 # Optional config row with the same id in the profile's cordis.patch.yml pins
 # the page every window opens:
 #
-#   - id: hongguo-window
+#   - id: douyin-window
 #     config:
-#       url: https://hongguoduanju.com/?tab=feed
+#       url: https://www.douyin.com/
 #
 - insert:
-    - id: hongguo-window
-      name: "dsh-hongguo-window"
+    - id: douyin-window
+      name: "dsh-douyin-window"

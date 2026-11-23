@@ -1,21 +1,21 @@
 /**
- * dsh-hongguo-window host entry (v2): exposes the pinned 红果短剧 page to the
- * client half as one fenced JSON route. The floating window, the working-state
- * listener and the toast all live in the browser bundle (`src/client/`).
+ * dsh-douyin-window host entry: exposes the pinned 抖音 page to the client half
+ * as one fenced JSON route. The native Browser tab, the working-state listener
+ * and the toast all live in the browser bundle (`src/client/`).
  */
 import { CONFIG_PATH, createConfigHandler, DEFAULT_URL, normalizeUrl } from "./server/config.ts";
 import type { Fence, RouteHandler } from "./server/config.ts";
 import type { IncomingMessage } from "node:http";
 
 /** Plugin identity for cordis.yml rows. */
-export const name = "dsh-hongguo-window";
+export const name = "dsh-douyin-window";
 
 /** Services required before mounting: the host web server and its trust fence. */
 export const inject = ["webServer", "connection"];
 
-/** Optional profile config (`- id: hongguo-window` row). */
+/** Optional profile config (`- id: douyin-window` row). */
 export interface PluginConfig {
-  /** Page embedded by the floating window; must be an absolute http(s) URL. */
+  /** Page opened by the window; must be an absolute http(s) URL. */
   url?: string;
 }
 
@@ -35,6 +35,6 @@ export function apply(ctx: HostContext, config?: PluginConfig): void {
   const handler = createConfigHandler(url, fence);
   ctx.effect(
     () => ctx.webServer.register({ kind: "prefix", path: CONFIG_PATH, handler }),
-    "hongguo-window: 红果短剧 config route",
+    "douyin-window: config route",
   );
 }

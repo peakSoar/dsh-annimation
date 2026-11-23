@@ -1,15 +1,15 @@
 /**
- * tsdown build for dsh-hongguo-window v2:
+ * tsdown build for dsh-douyin-window:
  *
- * - the host half: lib/index.js (ESM node) — the fenced /hongguo-wall/config
+ * - the host half: lib/index.js (ESM node) — the fenced /douyin-window/config
  *   route that may pin the embedded page for a profile;
  * - two browser client bundles (lib/client.js and lib/client-registry.js,
  *   CJS closure factory), one per install channel:
  *   - `lib/client.js` serves the official profile channel, registering with
- *     the package-name id `dsh-hongguo-window`;
+ *     the package-name id `dsh-douyin-window`;
  *   - `lib/client-registry.js` serves the plugin-registry channel
  *     (dsh.plugin.json), registering with the manifest id
- *     `dsh-external/dsh-hongguo-window`.
+ *     `dsh-external/dsh-douyin-window`.
  *
  * Both client bundles replicate the official DSH client-bundle preset:
  * externals resolve through the loader module table at runtime (react +
@@ -92,7 +92,7 @@ export default [
     fixedExtension: false,
   },
   // Official profile channel: bundle id = package name.
-  clientBundle("dsh-hongguo-window", "client.js"),
+  clientBundle("dsh-douyin-window", "client.js"),
   // Plugin-registry channel: bundle id = manifest id (dsh.plugin.json).
-  clientBundle("dsh-external/dsh-hongguo-window", "client-registry.js"),
+  clientBundle("dsh-external/dsh-douyin-window", "client-registry.js"),
 ] satisfies UserConfig[];

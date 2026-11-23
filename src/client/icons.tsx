@@ -1,6 +1,5 @@
 /**
- * Inline 14px stroke icons for the window chrome. Inline paths keep the bundle
- * free of icon fonts and SVG sprite dependencies.
+ * Inline 14px stroke icons used by the launcher pill, the toast and settings.
  */
 import type { ReactNode } from "react";
 
@@ -23,11 +22,13 @@ function glyph(children: ReactNode): ReactNode {
   );
 }
 
-export function IconReload(): ReactNode {
+/** Music note / play mark used as the 抖音 tile glyph. */
+export function IconNote(): ReactNode {
   return glyph(
     <>
-      <path d="M20 11a8 8 0 1 0-2.6 6.2" />
-      <path d="M20 5v6h-6" />
+      <path d="M9 18V6l10-2v12" />
+      <circle cx="6.5" cy="18" r="2.5" />
+      <circle cx="16.5" cy="16" r="2.5" />
     </>,
   );
 }
@@ -47,19 +48,6 @@ export function IconExternal(): ReactNode {
       <path d="M14 4h6v6" />
       <path d="M20 4 11 13" />
       <path d="M18 14v5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h5" />
-    </>,
-  );
-}
-
-export function IconMinimize(): ReactNode {
-  return glyph(<path d="M6 12h12" />);
-}
-
-export function IconClose(): ReactNode {
-  return glyph(
-    <>
-      <path d="M7 7l10 10" />
-      <path d="M17 7 7 17" />
     </>,
   );
 }

@@ -1,29 +1,29 @@
 /**
- * Persisted preferences for the 红果短剧 floating window.
+ * Persisted preferences for the 抖音 floating browser window.
  *
  * Everything the user can change lives in one JSON record under a versioned
  * localStorage key; parsing is total (a corrupted record falls back to the
  * defaults instead of breaking the plugin boot).
  */
 
-/** Default page: the public 红果短剧 information feed. */
-export const DEFAULT_URL = "https://hongguoduanju.com/?tab=feed";
+/** Default page: Douyin's web recommendation feed. */
+export const DEFAULT_URL = "https://www.douyin.com/";
 
-/** localStorage keys owned by this plugin. */
-export const SETTINGS_KEY = "dsh-hongguo-window:settings:v2";
+/** localStorage key owned by this plugin. */
+export const SETTINGS_KEY = "dsh-douyin-window:settings:v1";
 
 /** User-tunable behaviour of the window. */
 export interface Settings {
-  /** Page embedded in the floating window. */
+  /** Page opened in the native browser tab. */
   url: string;
-  /** Show (or restore) the window when a turn starts. */
+  /** Open (or reveal) the window when a turn starts. */
   autoOpen: boolean;
-  /** Hide the window when the last running turn finishes. */
+  /** Close the window when the last running turn finishes. */
   autoClose: boolean;
   /** Float a "工作结束了" toast when the last running turn finishes. */
   notify: boolean;
-  /** Keep a small 红果短剧 launcher visible while the window is closed. */
-  idleLauncher: boolean;
+  /** Keep the small 抖音 launcher pill visible. */
+  showPill: boolean;
 }
 
 /** Defaults; also the shape a malformed record falls back to. */
@@ -32,7 +32,7 @@ export const DEFAULT_SETTINGS: Settings = {
   autoOpen: true,
   autoClose: true,
   notify: true,
-  idleLauncher: false,
+  showPill: true,
 };
 
 /** The slice of the Web Storage API this module needs. */
@@ -84,7 +84,7 @@ export function parseSettings(raw: string | null | undefined): Settings {
     autoOpen: bool("autoOpen", DEFAULT_SETTINGS.autoOpen),
     autoClose: bool("autoClose", DEFAULT_SETTINGS.autoClose),
     notify: bool("notify", DEFAULT_SETTINGS.notify),
-    idleLauncher: bool("idleLauncher", DEFAULT_SETTINGS.idleLauncher),
+    showPill: bool("showPill", DEFAULT_SETTINGS.showPill),
   };
 }
 
