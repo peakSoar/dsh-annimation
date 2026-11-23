@@ -1,0 +1,84 @@
+{
+  "name": "dsh-hongguo-window",
+  "version": "1.0.0",
+  "description": "红果短剧随任务浮窗 — DSH 插件：Harness 开始工作时自动打开红果短剧浮窗，任务结束时自动收起并飘出「工作结束了」提示",
+  "type": "module",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/peakSoar/dsh-annimation.git"
+  },
+  "keywords": [
+    "dsh-hongguo-window",
+    "dsh",
+    "dsh-plugin",
+    "dsh-plugin-web",
+    "dsh-market",
+    "deepseek-harness",
+    "deepseek-harness-plugin",
+    "hongguo",
+    "红果短剧",
+    "short-drama",
+    "floating-window"
+  ],
+  "engines": {
+    "node": ">=20",
+    "dsh": ">=0.2.1-rc.2"
+  },
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./client": "./lib/client.js",
+    "./src/*": "./src/*",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib",
+    "src",
+    "docs",
+    "assets",
+    "scripts",
+    "cordis.patch.yml",
+    "dsh.plugin.json",
+    "screenshots.json",
+    "README.md",
+    "README_EN.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "node scripts/clean.mjs && tsdown",
+    "watch": "tsdown --watch",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "smoke": "node tests/smoke-client.mjs"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true
+    }
+  },
+  "peerDependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.0.3",
+    "@types/react": "~18.3.1",
+    "@types/react-dom": "~18.3.1",
+    "jsdom": "^26.1.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "tsdown": "^0.22.2",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4"
+  },
+  "bugs": {
+    "url": "https://github.com/peakSoar/dsh-annimation/issues"
+  },
+  "homepage": "https://github.com/peakSoar/dsh-annimation#readme",
+  "author": "peakSoar"
+}

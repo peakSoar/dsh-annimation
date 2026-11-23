@@ -1,0 +1,16 @@
+{
+  "id": "dsh-external/dsh-hongguo-window",
+  "version": "1.0.0",
+  "main": "./lib/index.js",
+  "description": "跟随 DSH 任务自动开关的红果短剧浮窗：开始工作自动打开，任务结束自动收起并提示",
+  "engines": {
+    "dsh": ">=0.0.1"
+  },
+  "contributes": {
+    "tools": [],
+    "skills": []
+  },
+  "client": {
+    "main": "./lib/client-registry.js"
+  }
+}
